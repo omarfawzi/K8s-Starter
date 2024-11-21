@@ -1,6 +1,5 @@
-# Project Name: Kubernetes Setup with ArgoCD, Kind, and Helm
+# K8s ArgoCD & Helm Starter
 
-![Kubernetes Logo](https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo.png)  
 This project uses **Kind** (Kubernetes in Docker) to create isolated Kubernetes clusters, installs **ArgoCD** using Helm, and manages applications through ArgoCD. This guide provides all the steps to set up, install, and interact with the project.
 
 ## Table of Contents
