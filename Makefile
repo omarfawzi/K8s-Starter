@@ -49,11 +49,11 @@ apply-argocd-apps-production:
 
 ingress-install-production:
 	kubectl config use-context kind-production-cluster
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+	kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
 
 ingress-install-staging:
 	kubectl config use-context kind-staging-cluster
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+	kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
 
 # Start ArgoCD in Production Cluster (Port-Forwarding)
 start-production-cluster:
@@ -70,5 +70,5 @@ start-ingress-production:
 	kubectl port-forward svc/ingress-nginx-controller -n ingress-nginx 8082:80
 
 start-ingress-staging:
-	kubectl config use-context kind-production-cluster
+	kubectl config use-context kind-staging-cluster
 	kubectl port-forward svc/ingress-nginx-controller -n ingress-nginx 8083:80
