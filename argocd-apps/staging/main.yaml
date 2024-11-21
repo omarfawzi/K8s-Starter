@@ -9,20 +9,21 @@ spec:
         repoURL: 'https://github.com/omarfawzi/K8s-ArgoCd-Starter'
         revision: HEAD
         directories:
-          - path: "argocd-apps/staging/apps/*"
+          - path: "argocd-apps/staging/apps/*"  # Match all subdirectories in staging/apps
   template:
     metadata:
-      name: '{{path.basename}}'
-      namespace: argocd
+      name: '{{path.basename}}'   # Use the name of each subdirectory as the app name
+      namespace: argocd           # All applications will be created in the 'argocd' namespace
     spec:
       project: default
       source:
         repoURL: 'https://github.com/omarfawzi/K8s-ArgoCd-Starter'
         targetRevision: HEAD
-        path: "argocd-apps/staging/apps/{{path.basename}}"
+        path: "{{ path }}"  # Point to the app directory dynamically
       destination:
         server: 'https://kubernetes.default.svc'
+        namespace: default  # Keep this as default or specify the exact namespace you want
       syncPolicy:
         automated:
           prune: true
-          selfHeal: false
+          selfHeal: true
