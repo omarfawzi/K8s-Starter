@@ -145,14 +145,14 @@ You can view the logs of ArgoCD or any application deployed in the cluster.
 - For **Production**:
 
 ```bash
-make env-production
+make env-production switch-cluster
 kubectl logs -n argocd -l app.kubernetes.io/name=argocd-server -f
 ```
 
 - For **Staging**:
 
 ```bash
-make env-staging
+make env-staging switch-cluster
 kubectl logs -n argocd -l app.kubernetes.io/name=argocd-server -f
 ```
 
@@ -190,21 +190,35 @@ After running the command, open your browser and navigate to:
 
 You can log in with the **admin** username and the password retrieved earlier.
 
-### Managing Applications with ArgoCD
+### Managing Applications
+
+To apply argocd applications set you would need to execute following:
+
+- For **Production**:
+
+```bash
+make env-production apply-argocd-templates
+```
+
+- For **Staging**:
+
+```bash
+make env-staging apply-argocd-templates
+```
 
 You can use the ArgoCD CLI or the UI to manage applications. To sync an application from the CLI:
 
 - For **Production**:
 
 ```bash
-make env-production
+make env-production switch-cluster
 argocd app sync <app_name> --insecure
 ```
 
 - For **Staging**:
 
 ```bash
-make env-staging
+make env-staging switch-cluster
 argocd app sync <app_name> --insecure
 ```
 

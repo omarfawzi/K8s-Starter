@@ -93,9 +93,13 @@ env-staging:
 	$(eval ARGO_PORT := 81)
 	$(eval INGRESS_PORT := 3)
 
+switch-cluster:
+	kubectl config use-context kind-$(ENVIRONMENT)-cluster
+
 # ===================================================================
 # Default Targets
 # ===================================================================
+
 
 ## Set default environment to production and install ArgoCD
 default: env-production install-argocd
