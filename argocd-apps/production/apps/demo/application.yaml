@@ -11,7 +11,7 @@ metadata:
     name: demo-app
 
 spec:
-  project: demo-app
+  project: default
   revisionHistoryLimit: 5
 
   source:
