@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: main
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/omarfawzi/K8s-ArgoCd-Starter
+        revision: HEAD
+        directories:
+          - path: argocd-apps/staging/apps/*
+  template:
+    metadata:
+      name: "{{directory.basename}}"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/omarfawzi/K8s-ArgoCd-Starter
+        targetRevision: HEAD
+        path: "{{directory.path}}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{directory.basename}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
