@@ -35,10 +35,15 @@ jobs:
         with:
           version: "v3.12.0" # Specify Helm version
 
+      - name: Lint Kubernetes Manifests
+        run: |
+          helm lint kube-manifests/demo/
+          kubectl apply -f kube-manifests/demo/ --dry-run=client
+
       # Step 5: Apply Kubernetes manifests
       - name: Apply Kubernetes manifests
         run: |
-          kubectl apply -f kube-manifests/demo
+          kubectl apply -f kube-manifests/demo/
 
       # Step 6: Wait for Pods to be ready
       - name: Wait for application to be ready
