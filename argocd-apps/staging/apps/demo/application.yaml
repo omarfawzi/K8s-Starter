@@ -4,8 +4,6 @@ kind: Application
 metadata:
   name: demo-app
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
   labels:
     environment: staging
     name: demo-app
