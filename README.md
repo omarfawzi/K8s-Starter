@@ -1,5 +1,7 @@
 # K8s Starter
 
+[![Test](https://github.com/omarfawzi/K8s-Starter/actions/workflows/main.yml/badge.svg)](https://github.com/omarfawzi/K8s-Starter/actions/workflows/main.yml)
+
 This project uses **Kind** (Kubernetes in Docker) to create isolated Kubernetes clusters, installs **ArgoCD** using Helm, and manages applications through ArgoCD. This guide provides all the steps to set up, install, and interact with the project.
 
 ## Table of Contents
