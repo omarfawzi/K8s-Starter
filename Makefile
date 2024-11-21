@@ -17,16 +17,6 @@ create-cluster-staging:
 	kind create cluster --name staging-cluster --config clusters/staging/cluster.yaml
 	helm install $(ARGO_HELM_RELEASE) argo/argo-cd -n $(ARGO_NAMESPACE) --create-namespace
 
-# Start ArgoCD in Production Cluster (Port-Forwarding)
-start-production-cluster:
-	kubectl config use-context kind-production-cluster
-	kubectl port-forward svc/argo-cd-argocd-server -n $(ARGO_NAMESPACE) 8080:80
-
-# Start ArgoCD in Staging Cluster (Port-Forwarding)
-start-staging-cluster:
-	kubectl config use-context kind-staging-cluster
-	kubectl port-forward svc/argo-cd-argocd-server -n $(ARGO_NAMESPACE) 8081:80
-
 # Retrieve argocd password, user: admin
 get-production-cluster-password:
 	@kubectl config use-context kind-production-cluster
@@ -56,3 +46,29 @@ apply-argocd-apps-staging:
 apply-argocd-apps-production:
 	kubectl config use-context kind-production-cluster
 	kubectl apply -f argocd-apps/production/main.yaml
+
+ingress-install-production:
+	kubectl config use-context kind-production-cluster
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+
+ingress-install-staging:
+	kubectl config use-context kind-staging-cluster
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+
+# Start ArgoCD in Production Cluster (Port-Forwarding)
+start-production-cluster:
+	kubectl config use-context kind-production-cluster
+	kubectl port-forward svc/argo-cd-argocd-server -n $(ARGO_NAMESPACE) 8080:80
+
+# Start ArgoCD in Staging Cluster (Port-Forwarding)
+start-staging-cluster:
+	kubectl config use-context kind-staging-cluster
+	kubectl port-forward svc/argo-cd-argocd-server -n $(ARGO_NAMESPACE) 8081:80
+
+start-ingress-production:
+	kubectl config use-context kind-production-cluster
+	kubectl port-forward svc/ingress-nginx-controller -n ingress-nginx 8082:80
+
+start-ingress-staging:
+	kubectl config use-context kind-production-cluster
+	kubectl port-forward svc/ingress-nginx-controller -n ingress-nginx 8083:80
