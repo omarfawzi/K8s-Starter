@@ -1,74 +1,101 @@
+# ===================================================================
 # Variables
+# ===================================================================
+
 HELM_REPO_URL := https://argoproj.github.io/argo-helm
 ARGO_HELM_RELEASE := argo-cd
 ARGO_NAMESPACE := argocd
+KIND_CLUSTER_CONFIG_DIR := clusters
 
-# Initialize ArgoCD Helm Repository
-init-argo-repo:
+# ===================================================================
+# Helm and ArgoCD Setup
+# ===================================================================
+
+## Add ArgoCD Helm repository
+helm-repo-add:
 	helm repo add argo $(HELM_REPO_URL)
 
-# Create Production Cluster with Kind and Install ArgoCD
-create-cluster-production:
-	kind create cluster --name production-cluster --config clusters/production/cluster.yaml
+## Install ArgoCD in a specified Kind cluster (production or staging)
+install-argocd:
+	@echo "Installing ArgoCD in the $(ENVIRONMENT) cluster..."
+	kind create cluster --name $(ENVIRONMENT)-cluster --config $(KIND_CLUSTER_CONFIG_DIR)/$(ENVIRONMENT)/cluster.yaml
 	helm install $(ARGO_HELM_RELEASE) argo/argo-cd -n $(ARGO_NAMESPACE) --create-namespace
 
-# Create Staging Cluster with Kind and Install ArgoCD
-create-cluster-staging:
-	kind create cluster --name staging-cluster --config clusters/staging/cluster.yaml
-	helm install $(ARGO_HELM_RELEASE) argo/argo-cd -n $(ARGO_NAMESPACE) --create-namespace
+# ===================================================================
+# Retrieve ArgoCD Credentials
+# ===================================================================
 
-# Retrieve argocd password, user: admin
-get-production-cluster-password:
-	@kubectl config use-context kind-production-cluster
-	@echo "Password: " && kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+## Retrieve ArgoCD initial admin password from the specified cluster
+get-argocd-password:
+	@echo "Retrieving ArgoCD password for $(ENVIRONMENT) cluster..."
+	@kubectl config use-context kind-$(ENVIRONMENT)-cluster
+	@echo "Password: " && kubectl -n $(ARGO_NAMESPACE) get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
 
-# Retrieve argocd password, user: admin
-get-staging-cluster-password:
-	@kubectl config use-context kind-staging-cluster
-	@echo "Password: " && kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+# ===================================================================
+# ArgoCD Authentication
+# ===================================================================
 
-# Login to ArgoCD in Production Cluster
-login-production-cluster:
-	@echo "Logging in to ArgoCD production cluster..."
-	@kubectl config use-context kind-production-cluster
-	@argocd login localhost:8080 --username admin --password $$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d) --insecure
+## Login to ArgoCD in the specified cluster
+login-argocd:
+	@echo "Logging in to ArgoCD $(ENVIRONMENT) cluster..."
+	@kubectl config use-context kind-$(ENVIRONMENT)-cluster
+	@argocd login localhost:$(ARGO_PORT) --username admin --password $$(kubectl -n $(ARGO_NAMESPACE) get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d) --insecure
 
-# Login to ArgoCD in Staging Cluster
-login-staging-cluster:
-	@echo "Logging in to ArgoCD staging cluster..."
-	@kubectl config use-context kind-staging-cluster
-	@argocd login localhost:8081 --username admin --password $$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d) --insecure
+# ===================================================================
+# ArgoCD Application Management
+# ===================================================================
 
-apply-argocd-apps-staging:
-	kubectl config use-context kind-staging-cluster
-	kubectl apply -f argocd-apps/staging/main.yaml
+## Apply ArgoCD applications for the specified environment
+apply-argocd-apps:
+	@echo "Applying ArgoCD apps for $(ENVIRONMENT) cluster..."
+	kubectl config use-context kind-$(ENVIRONMENT)-cluster
+	kubectl apply -f argocd-apps/$(ENVIRONMENT)/main.yaml
 
-apply-argocd-apps-production:
-	kubectl config use-context kind-production-cluster
-	kubectl apply -f argocd-apps/production/main.yaml
+# ===================================================================
+# Ingress Setup
+# ===================================================================
 
-ingress-install-production:
-	kubectl config use-context kind-production-cluster
+## Install ingress-nginx for the specified environment
+install-ingress:
+	@echo "Installing ingress-nginx for $(ENVIRONMENT) cluster..."
+	kubectl config use-context kind-$(ENVIRONMENT)-cluster
 	kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
 
-ingress-install-staging:
-	kubectl config use-context kind-staging-cluster
-	kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
+# ===================================================================
+# Port Forwarding
+# ===================================================================
 
-# Start ArgoCD in Production Cluster (Port-Forwarding)
-start-production-cluster:
-	kubectl config use-context kind-production-cluster
-	kubectl port-forward svc/argo-cd-argocd-server -n $(ARGO_NAMESPACE) 8080:80
+## Start ArgoCD port-forwarding for the specified environment
+port-forward-argocd:
+	@echo "Starting port-forwarding for ArgoCD $(ENVIRONMENT) cluster..."
+	kubectl config use-context kind-$(ENVIRONMENT)-cluster
+	kubectl port-forward svc/argo-cd-argocd-server -n $(ARGO_NAMESPACE) 808$(ARGO_PORT):80
 
-# Start ArgoCD in Staging Cluster (Port-Forwarding)
-start-staging-cluster:
-	kubectl config use-context kind-staging-cluster
-	kubectl port-forward svc/argo-cd-argocd-server -n $(ARGO_NAMESPACE) 8081:80
+## Start ingress-nginx port-forwarding for the specified environment
+port-forward-ingress:
+	@echo "Starting port-forwarding for ingress-nginx $(ENVIRONMENT) cluster..."
+	kubectl config use-context kind-$(ENVIRONMENT)-cluster
+	kubectl port-forward svc/ingress-nginx-controller -n ingress-nginx 808$(INGRESS_PORT):80
 
-start-ingress-production:
-	kubectl config use-context kind-production-cluster
-	kubectl port-forward svc/ingress-nginx-controller -n ingress-nginx 8082:80
+# ===================================================================
+# Environment Configuration
+# ===================================================================
 
-start-ingress-staging:
-	kubectl config use-context kind-staging-cluster
-	kubectl port-forward svc/ingress-nginx-controller -n ingress-nginx 8083:80
+## Set environment to production
+env-production:
+	$(eval ENVIRONMENT := production)
+	$(eval ARGO_PORT := 80)
+	$(eval INGRESS_PORT := 2)
+
+## Set environment to staging
+env-staging:
+	$(eval ENVIRONMENT := staging)
+	$(eval ARGO_PORT := 81)
+	$(eval INGRESS_PORT := 3)
+
+# ===================================================================
+# Default Targets
+# ===================================================================
+
+## Set default environment to production and install ArgoCD
+default: env-production install-argocd
