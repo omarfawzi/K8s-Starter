@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/omarfawzi/K8s-ArgoCd-Starter'
     targetRevision: HEAD
-    path: argocd-apps/clusters/production
+    path: argocd-apps/production
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd
