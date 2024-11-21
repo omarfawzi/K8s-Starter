@@ -9,7 +9,7 @@ spec:
         repoURL: 'https://github.com/omarfawzi/K8s-ArgoCd-Starter'
         revision: HEAD
         directories:
-          - path: "argocd-apps/staging/apps/*"  # Match all subdirectories in staging/apps
+          - path: "argocd-templates/production/apps/*"  # Match all subdirectories in staging/apps
   template:
     metadata:
       name: '{{path.basename}}'   # Use the name of each subdirectory as the app name
@@ -26,4 +26,4 @@ spec:
       syncPolicy:
         automated:
           prune: true
-          selfHeal: true
+          selfHeal: false
