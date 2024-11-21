@@ -50,4 +50,9 @@ login-staging-cluster:
 	@argocd login localhost:8081 --username admin --password $$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d) --insecure
 
 apply-argocd-apps-staging:
-	kubectl apply -f argocd-apps/staging/apps/demo/application.yaml
+	kubectl config use-context kind-staging-cluster
+	kubectl apply -f argocd-apps/staging/main.yaml
+
+apply-argocd-apps-production:
+	kubectl config use-context kind-production-cluster
+	kubectl apply -f argocd-apps/production/main.yaml
