@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: demo-app
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    environment: staging
+    name: demo-app
+
+spec:
+  project: demo-app
+  revisionHistoryLimit: 5
+
+  source:
+    repoURL: https://github.com/omarfawzi/K8s-ArgoCd-Starter
+    targetRevision: HEAD
+    path: kube-manifests/demo
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-staging.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo-app
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

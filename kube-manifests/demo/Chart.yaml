@@ -1,0 +1,5 @@
+apiVersion: v2
+name: demo-app
+type: application
+description: A Helm chart of demo app for Kubernetes
+version: 0.1.0
