@@ -1,10 +1,10 @@
-name: Test on Kind
+name: Test Helm Charts
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-  push:
+  pull_request:
     branches:
       - main
 
@@ -17,53 +17,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Set up Kind
-      - name: Set up Kind cluster
+      # Step 2: Set up Kind cluster
+      - name: Set up Kind
         uses: helm/kind-action@v1
         with:
-          version: "v0.20.0" # Specify Kind version
+          version: "v0.20.0" # Kind version
 
-      # Step 3: Set up kubectl
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: "v1.27.0" # Specify Kubernetes version
-
-      # Step 4: Install Helm
+      # Step 3: Install Helm
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
-          version: "v3.12.0" # Specify Helm version
+          version: "v3.12.0" # Helm version
 
-      - name: Lint Kubernetes Manifests
+      # Step 4: Install Kubernetes manifests using Helm
+      - name: Install Helm Chart
         run: |
-          helm lint kube-manifests/demo/
-          kubectl apply -f kube-manifests/demo/ --dry-run=client
+          helm repo add stable https://charts.helm.sh/stable
+          helm install demo-app ./kube-manifests/demo/ -f kube-manifests/demo/values-production.yaml
 
-      # Step 5: Apply Kubernetes manifests
-      - name: Apply Kubernetes manifests
-        run: |
-          kubectl apply -f kube-manifests/demo/
-
-      # Step 6: Wait for Pods to be ready
-      - name: Wait for application to be ready
+      # Step 5: Verify Deployment
+      - name: Wait for Pods to be ready
         run: |
           kubectl wait --for=condition=ready pod --all --timeout=120s
 
-      # Step 7: Run integration tests
-      - name: Run integration tests
+      - name: Test Application
         run: |
+          # Replace with your actual tests
           kubectl get pods
-          # Example: Replace the following line with your actual test command
-          kubectl exec -it $(kubectl get pods -l app=my-app -o jsonpath="{.items[0].metadata.name}") -- curl -f http://localhost:8080/health || exit 1
+          kubectl exec -it $(kubectl get pods -l app=demo-app -o jsonpath="{.items[0].metadata.name}") -- curl -f http://localhost:8080/health
 
-      # Step 8: Gather logs for debugging (optional)
-      - name: Gather application logs
+      # Step 6: Gather logs (Optional)
+      - name: Application Logs
         run: |
-          kubectl logs -l app=my-app > app-logs.txt
+          kubectl logs -l app=demo-app > app-logs.txt
           cat app-logs.txt
-
-      # Step 9: Cleanup Kind cluster
-      - name: Delete Kind cluster
-        if: always()
-        run: kind delete cluster
