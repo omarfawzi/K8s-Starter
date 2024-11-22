@@ -228,38 +228,6 @@ You can also create, delete, or manage applications via the ArgoCD UI.
 
 ---
 
-## Uninstalling the Project
-
-To uninstall and clean up the environment:
-
-1. **Delete ArgoCD from the cluster**:
-
-- For **Production**:
-
-  ```
-  make env-production uninstall-argocd
-  ```
-
-- For **Staging**:
-
-  ```
-  make env-staging uninstall-argocd
-  ```
-
-2. **Delete the Kind cluster**:
-
-```bash
-kind delete cluster --name <cluster-name>
-```
-
-3. **Clean up Helm releases**:
-
-```bash
-helm uninstall argo-cd -n argocd
-```
-
----
-
 ## Troubleshooting
 
 - **ArgoCD UI not accessible**: Make sure the port-forwarding is running. If necessary, check if the ArgoCD server pod is up using `kubectl get pods -n argocd`.
