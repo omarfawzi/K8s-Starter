@@ -49,7 +49,7 @@ login-argocd:
 apply-argocd-templates:
 	@echo "Applying ArgoCD apps for $(ENVIRONMENT) cluster..."
 	kubectl config use-context kind-$(ENVIRONMENT)-cluster
-	kubectl apply -f argocd-templates/$(ENVIRONMENT)/main.yaml
+	kubectl apply -f argocd-templates/$(ENVIRONMENT)/application-set.yaml
 
 # ===================================================================
 # Ingress Setup
