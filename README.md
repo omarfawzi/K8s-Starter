@@ -70,6 +70,7 @@ make env-staging install-argocd install-ingress
 This will:
 1. Create a Kind cluster (`production-cluster` or `staging-cluster`).
 2. Install **ArgoCD** in the respective cluster using **Helm**.
+3. Install **Kind Ingress Controller** in the respective cluster using **Helm**.
 
 ### Step 3: Configure and Access ArgoCD
 
