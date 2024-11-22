@@ -59,12 +59,12 @@ We support two environments: **Production** and **Staging**. Each environment ru
 - To set up the **Production** cluster:
 
 ```bash
-make env-production install-argocd
+make env-production install-argocd install-ingress
 ```
 
 - To set up the **Staging** cluster:
 ```bash
-make env-staging install-argocd
+make env-staging install-argocd install-ingress
 ```
 
 This will:
