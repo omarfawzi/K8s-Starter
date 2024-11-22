@@ -199,13 +199,13 @@ To apply argocd applications set you would need to execute following:
 - For **Production**:
 
 ```bash
-make env-production apply-argocd-templates
+make env-production apply-argocd
 ```
 
 - For **Staging**:
 
 ```bash
-make env-staging apply-argocd-templates
+make env-staging apply-argocd
 ```
 
 You can use the ArgoCD CLI or the UI to manage applications. To sync an application from the CLI:

@@ -33,7 +33,7 @@ jobs:
       - name: Install Helm Chart
         run: |
           helm repo add stable https://charts.helm.sh/stable
-          helm install demo-app ./kube-manifests/demo/ -f kube-manifests/demo/values-staging.yaml
+          helm install demo-app ./kube/demo/ -f kube/demo/values-staging.yaml
 
       # Step 5: Verify Deployment
       - name: Wait for Pods to be ready
