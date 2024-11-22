@@ -48,8 +48,8 @@ Before starting, ensure you have the following tools installed on your machine:
 Clone this repository to your local machine:
 
 ```bash
-git clone <repository_url>
-cd <repository_directory>
+git clone https://github.com/omarfawzi/K8s-Starter
+cd K8s-Starter
 ```
 
 ### Step 2: Set Up the Kubernetes Cluster Using Kind
