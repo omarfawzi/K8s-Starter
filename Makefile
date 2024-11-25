@@ -69,13 +69,13 @@ install-ingress:
 port-forward-argocd:
 	@echo "Starting port-forwarding for ArgoCD $(ENVIRONMENT) cluster..."
 	kubectl config use-context kind-$(ENVIRONMENT)-cluster
-	kubectl port-forward svc/argo-cd-argocd-server -n $(ARGO_NAMESPACE) 808$(ARGO_PORT):80
+	kubectl port-forward svc/argo-cd-argocd-server -n $(ARGO_NAMESPACE) 80$(ARGO_PORT):80
 
 ## Start ingress-nginx port-forwarding for the specified environment
 port-forward-ingress:
 	@echo "Starting port-forwarding for ingress-nginx $(ENVIRONMENT) cluster..."
 	kubectl config use-context kind-$(ENVIRONMENT)-cluster
-	kubectl port-forward svc/ingress-nginx-controller -n ingress-nginx 808$(INGRESS_PORT):80
+	kubectl port-forward svc/ingress-nginx-controller -n ingress-nginx 80$(INGRESS_PORT):80
 
 # ===================================================================
 # Environment Configuration
